@@ -359,27 +359,27 @@ elif page == "Predection":
     result_df = pd.concat([h, g, f, k], axis=1)
 
 
-    def color_negative_red(value):
-        if value < 0:
-            return 'color: red'
-        elif value > 0:
-            return 'color: green'
-        else:
-            return 'color: black'  # Assuming black for zero change
+    # def color_negative_red(value):
+    #     if value < 0:
+    #         return 'color: red'
+    #     elif value > 0:
+    #         return 'color: green'
+    #     else:
+    #         return 'color: black'  # Assuming black for zero change
 
     # Apply conditional formatting to font color based on PercentageChange
-    def color_negative_red_percent(value):
-        if '%' in value:  # Check if the value contains a percentage sign
-            value = float(value.replace('%', ''))  # Remove percentage sign and convert to float
-            if value < 0:
-                return 'color: red'
-            elif value > 0:
-                return 'color: green'
-            else:
-                return 'color: black'  # Assuming black for zero change
+    # def color_negative_red_percent(value):
+    #     if '%' in value:  # Check if the value contains a percentage sign
+    #         value = float(value.replace('%', ''))  # Remove percentage sign and convert to float
+    #         if value < 0:
+    #             return 'color: red'
+    #         elif value > 0:
+    #             return 'color: green'
+    #         else:
+    #             return 'color: black'  # Assuming black for zero change
 
-    styled_result_df = result_df.style.applymap(color_negative_red, subset=['DailyChange']) \
-                                    .applymap(color_negative_red_percent, subset=['PercentageChange'])
+    # styled_result_df = result_df.style.applymap(color_negative_red, subset=['DailyChange']) \
+    #                                 .applymap(color_negative_red_percent, subset=['PercentageChange'])
 
     fig = go.Figure(data=[go.Candlestick(x=result_df.index,
                     open=result_df['Open'],
@@ -390,7 +390,7 @@ elif page == "Predection":
     st.plotly_chart(fig)
 
     # Display the styled DataFrame using Streamlit
-    st.write(styled_result_df)
+    st.write(result_df)
 
 
     fig3= plt.figure(figsize=(12,6))
@@ -400,10 +400,10 @@ elif page == "Predection":
     st.title("Next 5 Years Returns")
 
     # Input for the stock symbol
-    user_input = st.text_input("Enter the Stock Ticker", "AAPL", key="stock_symbol_input")
+    #user_input = st.text_input("Enter the Stock Ticker", "AAPL", key="stock_symbol_input")
 
     # Check for changes in the input field
-    if st.session_state.stock_symbol_input is not None:
+    if st.session_state.stock_symbol is not None:
         try:
             # Download historical data
             stock_data = yf.download(user_input, start="2023-01-01", end="2028-01-01")
