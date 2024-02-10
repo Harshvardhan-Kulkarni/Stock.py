@@ -15,9 +15,9 @@ st.title("Stock Market Analysis")
 today = datetime.date.today()
 start = '2010-01-01'
 end = today.strftime('%Y-%m-%d')
-st.title("Predictive Analysis of Stock Market Trends:           ")
+st.sidebar.title("Predictive Analysis of Stock Market Trends:           ")
+user_input = st.sidebar.text_input("Enter Stock Ticker (e.g., AAPL)", "AAPL",key="stock_symbol")
 
-user_input=st.text_input("Enter the Stock Tickter","AAPL", key="stock_symbol")
 df = yf.download(user_input, start=start, end=end)
 
 model=load_model("keras model.h5")
