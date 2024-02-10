@@ -3,7 +3,7 @@ streamlit
 tensorflow		
 scikit-learn	
 Pandas	
-jinja2	
+Jinja2	
 keras
 datetime
 matplotlib
