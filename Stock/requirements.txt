@@ -1,7 +1,6 @@
 ### dependency
 streamlit
-tensorflow	
-sklearn	
+tensorflow		
 scikit-learn	
 Pandas	
 jinja2	
@@ -11,7 +10,6 @@ matplotlib
 pyplot
 pandas_datareader
 yfinance
-keras
 components.v1
 plotly
 
