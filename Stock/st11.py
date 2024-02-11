@@ -371,7 +371,8 @@ elif page == "Predection":
     # def color_negative_red_percent(value):
     #     if '%' in value:  # Check if the value contains a percentage sign
     #         value = float(value.replace('%', ''))  # Remove percentage sign and convert to float
-    #         if value < 0:
+    #         if 
+    #  < 0:
     #             return 'color: red'
     #         elif value > 0:
     #             return 'color: green'
@@ -433,8 +434,7 @@ elif page == "Predection":
 
 elif page == "Chattbot":
     st.title("Settings")
-    # Add content for the analysis page
-
+    
 elif page == "Stock News":
     def get_stock_news(ticker, num_news=5):
         stock = yf.Ticker(ticker)
@@ -453,8 +453,13 @@ elif page == "Stock News":
     news_list = get_stock_news(ticker, num_news)
 
     for news_item in news_list:
-        st.subheader(news_item.get('title', 'Title Not Available'))
-        st.write(f"Published: {news_item.get('date', 'Date Not Available')}")
-        st.write(f"Summary: {news_item.get('summary', 'Summary Not Available')}")
-        st.write(f"URL: {news_item.get('url', 'URL Not Available')}")
+        title = news_item.get('title', 'Title Not Available')
+        date = news_item.get('date', 'Date Not Available')
+        summary = news_item.get('summary', 'Summary Not Available')
+        url = news_item.get('url', 'URL Not Available')
+
+        st.subheader(title)
+        st.write(f"Published: {date}")
+        st.write(f"Summary: {summary}")
+        st.write(f"URL: {url}")
         st.markdown("---")  # Separator between news articles
