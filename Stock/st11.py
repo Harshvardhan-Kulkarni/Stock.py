@@ -59,35 +59,99 @@ test_predication=test_predication*scaling_factor
 page = st.sidebar.selectbox("Select a page", ["Home", "Stock Analysis", "Predection","Chattbot","Stock News"])
 
 if page == "Home":
-    st.title("Welcome to the Home Page")
     
     # Apply custom CSS to style the Home page
     st.markdown("""
         <style>
+            body {
+                background-color: #fff;
+                color: #000;
+            }
+
             .home-container {
-                background-color: #3498db;
+                background-color: #000;
                 color: #fff;
                 padding: 20px;
                 border-radius: 8px;
+                box-shadow: 0 4px 8px rgba(255, 255, 255, 0.1);
+            }
+
+            nav {
+            display: flex;
+            justify-content: center;
+            background-color: #000;
+            padding: 10px;
+            margin-top: 20px;
+            }
+
+            nav a {
+                color: #fff;
+                margin: 0 15px;
+                text-decoration: none;
+                font-weight: bold;
+                font-size: 18px;
+                transition: color 0.3s ease-in-out, background-color 0.3s ease-in-out;
+                padding: 8px 16px;
+                border-radius: 8px;
+            }
+
+            nav a:hover {
+                color: #3498db;
+                background-color: #fff;
                 box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             }
 
+            .about-contact-container {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 30px;
+        }
+
+        .about-contact-card {
+            background-color: #fff;
+            color: #000;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 45%;
+            transition: box-shadow 0.3s ease-in-out, transform 0.3s ease-in-out;
+        }
+
+        .about-contact-card:hover {
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            transform: scale(1.05);
+        }
         </style>
     """, unsafe_allow_html=True)
 
     # HTML content for the home page
     st.markdown("""
-        <header style="text-align: center; background-color: #004080; padding: 40px; color: rgb(5, 51, 90);">
-        <h1 style="font-size: 48px; margin: 0; font-family: 'Arial Black', sans-serif; letter-spacing: 2px;">
-                Stock Prediction And Analysis</h1>
-    </header>    
-    <nav>
-        <a href="/">Browse</a>
-        <a href="/browse">Predictions</a>
-        <a href="/feedback">Trends</a>
-        <a href="/">Contact</a>
-        <a href="/login">Login</a>
-    </nav>
+        <div class="home-container">
+            <header style="text-align: center; background-color: #000; padding: 40px; color: #fff;">
+                <h1 style="font-size: 48px; margin: 0; font-family: 'Arial Black', sans-serif; letter-spacing: 2px;">
+                    Stock Prediction And Analysis</h1>
+            </header>    
+            <nav>
+                <a href="/">Home</a>
+                <a href="/browse">Stock Analysis</a>
+                <a href="/feedback">Predictions</a>
+                <a href="/about">Chatbott</a>
+                <a href="/contact">Stock News</a>
+                <a href="/login">About Us</a>
+            </nav>
+            
+        <div class="about-contact-container">
+            <div class="about-contact-card">
+                <h2>About Us</h2>
+                <p>Why Choose Us?<br> Elevate insights with Moving Average for trend precision, visualize forecasts vividly using Matplotlib, and stand out in stock market analysis with captivating visuals.</p>
+                </div>
+            <div class="about-contact-card">
+                <h2>Our Team</h2>
+                <p>Connect with our talented team for inquiries, support, or collaboration opportunities.<br>
+                Developed by- Team Aztecs
+                </p>
+            </div>
+
     """, unsafe_allow_html=True)
 
 elif page == "Stock Analysis":
@@ -432,8 +496,46 @@ elif page == "Predection":
         st.write("Enter a stock symbol to get the returns.")
     # Add content for the analysis page
 
-elif page == "Chattbot":
-    st.title("Settings")
+elif page == "Chatbot":
+    # Fetch historical data
+        symbol=user_input
+        def fetch_stock_data(symbol):
+    # Fetch data from Yahoo Finance
+                stock_data = yf.Ticker(symbol)
+                return stock_data
+        try:
+            stock = fetch_stock_data(symbol)
+
+            st.write(f"### {symbol} Stock Information")
+            st.write(stock.info)
+
+            # Chatbot interaction
+            st.write("### Ask a question:")
+            question = st.text_input("Type here...")
+
+            if st.button("Ask"):
+                if question.lower() == "closing price":
+                    st.write(f"The closing price of {symbol} is ${stock.history(period='1d')['Close'].iloc[-1]}")
+
+                elif question.lower() == "opening price":
+                    st.write(f"The opening price of {symbol} was ${stock.history(period='1d')['Open'].iloc[0]}")
+
+                elif question.lower() == "volume":
+                    st.write(f"The volume of {symbol} traded today is {stock.history(period='1d')['Volume'].iloc[-1]}")
+
+                elif question.lower() == "top gainer":
+                    top_gainer = stock.history(period='1d').nlargest(1, 'Close')
+                    st.write(f"The top gainer today is {top_gainer.index[0]} with a closing price of ${top_gainer['Close'].iloc[0]}")
+
+                elif question.lower() == "top loser":
+                    top_loser = stock.history(period='1d').nsmallest(1, 'Close')
+                    st.write(f"The top loser today is {top_loser.index[0]} with a closing price of ${top_loser['Close'].iloc[0]}")
+
+                else:
+                    st.write("I'm sorry, I don't understand that question.")
+
+        except Exception as e:
+            st.error(f"Error fetching data: {str(e)}")
     
 elif page == "Stock News":
     def get_stock_news(ticker, num_news=5):
@@ -445,7 +547,7 @@ elif page == "Stock News":
     st.title("Real-Time Stock News")
 
     # Sidebar for user input
-    ticker = st.sidebar.text_input("Enter Stock Ticker (e.g., AAPL)", "AAPL")
+    ticker = user_input
     num_news = st.sidebar.slider("Number of News Articles", 1, 10, 5)
 
     # Display stock news
