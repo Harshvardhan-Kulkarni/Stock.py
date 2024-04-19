@@ -9,6 +9,9 @@ import plotly.graph_objs as go
 import datetime
 import sklearn 
 import streamlit.components.v1 as components
+import nltk
+from nltk.tokenize import word_tokenize
+import requests
 
 import streamlit as st    
 st.title("Stock Market Analysis")
@@ -32,6 +35,10 @@ scaler = MinMaxScaler(feature_range=(0,1))
 data_training_array= scaler.fit_transform(data_training)
 data_testing_array= scaler.fit_transform(data_testing)
 
+def fetch_stock_data(symbol):
+    # Fetch data from Yahoo Finance
+    stock_data = yf.Ticker(symbol)
+    return stock_data
 
 past_100_days = data_training.tail(100)
 final_df = past_100_days._append(data_testing, ignore_index=True)
@@ -56,103 +63,32 @@ y_test = y_test*scaling_factor
 test_predication=test_predication*scaling_factor
 
 # Sidebar navigation
-page = st.sidebar.selectbox("Select a page", ["Home", "Stock Analysis", "Predection","Chattbot","Stock News"])
+page = st.sidebar.selectbox("Select a page", ["Home", "Stock Analysis", "Prediction","Chatbot","Stock News"])
 
 if page == "Home":
+    st.title("Future Finance: Predictive Insights and Chatbot Consultation")
+
+    st.subheader("Abstract")
+    st.write("""
+    The framework has four key components:
     
-    # Apply custom CSS to style the Home page
-    st.markdown("""
-        <style>
-            body {
-                background-color: #fff;
-                color: #000;
-            }
+    1. **Stock Analysis**: A data-driven approach that breaks down historical data to reduce hidden information.
+    2. **Stock Prediction**: Applies predictive modeling to gain insights about future market trends and movements, informing investors.
+    3. **Asisystem**: An AI-enabled assistant that provides customized suggestions, up-to-the-minute details, and impeccable representative behavior.
+    4. **Market Guider**: Offers users curated news and updates from the stock market, enabling them to stay informed.
+    
+    The project utilizes an LSTM model for predictive analysis, which achieved an R-squared score of 0.89 and demonstrated robustness with a cross-validation score of 0.84. The model is deployed through a Streamlit interface, allowing users to input a stock ticker and receive predicted prices.
+    """)
 
-            .home-container {
-                background-color: #000;
-                color: #fff;
-                padding: 20px;
-                border-radius: 8px;
-                box-shadow: 0 4px 8px rgba(255, 255, 255, 0.1);
-            }
+    st.subheader("Meet the Team")
+    cols = st.columns(2)
+    with cols[0]:
+        st.markdown("- [Ashish Ruke](https://www.linkedin.com/in/ashish-ruke-68a038230/)")
+        st.markdown("- [Harshvardhan Kulkarni](https://www.linkedin.com/in/ashish-ruke-68a038230/)")
+    with cols[1]:
+        st.markdown("- [Anushka Pote](https://www.linkedin.com/in/anushka-pote-17b692224/)")
+        st.markdown("- [Shreyash Shegade](https://www.linkedin.com/in/shreyash-shedage-970b812a7/)")
 
-            nav {
-            display: flex;
-            justify-content: center;
-            background-color: #000;
-            padding: 10px;
-            margin-top: 20px;
-            }
-
-            nav a {
-                color: #fff;
-                margin: 0 15px;
-                text-decoration: none;
-                font-weight: bold;
-                font-size: 18px;
-                transition: color 0.3s ease-in-out, background-color 0.3s ease-in-out;
-                padding: 8px 16px;
-                border-radius: 8px;
-            }
-
-            nav a:hover {
-                color: #3498db;
-                background-color: #fff;
-                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            }
-
-            .about-contact-container {
-            display: flex;
-            justify-content: space-around;
-            margin-top: 30px;
-        }
-
-        .about-contact-card {
-            background-color: #fff;
-            color: #000;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            width: 45%;
-            transition: box-shadow 0.3s ease-in-out, transform 0.3s ease-in-out;
-        }
-
-        .about-contact-card:hover {
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-            transform: scale(1.05);
-        }
-        </style>
-    """, unsafe_allow_html=True)
-
-    # HTML content for the home page
-    st.markdown("""
-        <div class="home-container">
-            <header style="text-align: center; background-color: #000; padding: 40px; color: #fff;">
-                <h1 style="font-size: 48px; margin: 0; font-family: 'Arial Black', sans-serif; letter-spacing: 2px;">
-                    Stock Prediction And Analysis</h1>
-            </header>    
-            <nav>
-                <a href="/">Home</a>
-                <a href="/browse">Stock Analysis</a>
-                <a href="/feedback">Predictions</a>
-                <a href="/about">Chatbott</a>
-                <a href="/contact">Stock News</a>
-                <a href="/login">About Us</a>
-            </nav>
-            
-        <div class="about-contact-container">
-            <div class="about-contact-card">
-                <h2>About Us</h2>
-                <p>Why Choose Us?<br> Elevate insights with Moving Average for trend precision, visualize forecasts vividly using Matplotlib, and stand out in stock market analysis with captivating visuals.</p>
-                </div>
-            <div class="about-contact-card">
-                <h2>Our Team</h2>
-                <p>Connect with our talented team for inquiries, support, or collaboration opportunities.<br>
-                Developed by- Team Aztecs
-                </p>
-            </div>
-
-    """, unsafe_allow_html=True)
 
 elif page == "Stock Analysis":
 
@@ -225,7 +161,7 @@ elif page == "Stock Analysis":
     y_test = y_test*scaling_factor
     test_predication=test_predication*scaling_factor
 
-    st.subheader("predication vs orignal")
+    st.subheader("Prediction vs Original")
     fig2=plt.figure(figsize=(12,6))
     plt.plot(y_test, 'b', label = 'Original Price')
     plt.plot(test_predication,'r', label ='Preditemp_inputcted Price')
@@ -235,7 +171,7 @@ elif page == "Stock Analysis":
     st.pyplot(fig2)
     
 
-elif page == "Predection":
+elif page == "Prediction":
     st.title("Stock Market Analysis")
 
     # demonstrate prediction for next 50 days  with closing price
@@ -423,28 +359,27 @@ elif page == "Predection":
     result_df = pd.concat([h, g, f, k], axis=1)
 
 
-    # def color_negative_red(value):
-    #     if value < 0:
-    #         return 'color: red'
-    #     elif value > 0:
-    #         return 'color: green'
-    #     else:
-    #         return 'color: black'  # Assuming black for zero change
+    def color_negative_red(value):
+         if value < 0:
+            return 'color: red'
+         elif value > 0:
+             return 'color: green'
+         else:
+             return 'color: black'  # Assuming black for zero change
 
-    # Apply conditional formatting to font color based on PercentageChange
-    # def color_negative_red_percent(value):
-    #     if '%' in value:  # Check if the value contains a percentage sign
-    #         value = float(value.replace('%', ''))  # Remove percentage sign and convert to float
-    #         if 
-    #  < 0:
-    #             return 'color: red'
-    #         elif value > 0:
-    #             return 'color: green'
-    #         else:
-    #             return 'color: black'  # Assuming black for zero change
+    #Apply conditional formatting to font color based on PercentageChange
+    def color_negative_red_percent(value):
+        if '%' in value:  # Check if the value contains a percentage sign
+             value = float(value.replace('%', ''))  # Remove percentage sign and convert to float
+             if value< 0:
+                 return 'color: red'
+             elif value > 0:
+                return 'color: green'
+             else:
+                 return 'color: black'  # Assuming black for zero change
 
-    # styled_result_df = result_df.style.applymap(color_negative_red, subset=['DailyChange']) \
-    #                                 .applymap(color_negative_red_percent, subset=['PercentageChange'])
+    styled_result_df = result_df.style.applymap(color_negative_red, subset=['DailyChange']) \
+                                     .applymap(color_negative_red_percent, subset=['PercentageChange'])
 
     fig = go.Figure(data=[go.Candlestick(x=result_df.index,
                     open=result_df['Open'],
@@ -497,71 +432,143 @@ elif page == "Predection":
     # Add content for the analysis page
 
 elif page == "Chatbot":
-    # Fetch historical data
-        symbol=user_input
-        def fetch_stock_data(symbol):
-    # Fetch data from Yahoo Finance
-                stock_data = yf.Ticker(symbol)
-                return stock_data
-        try:
+            symbol =user_input
             stock = fetch_stock_data(symbol)
 
             st.write(f"### {symbol} Stock Information")
             st.write(stock.info)
 
             # Chatbot interaction
-            st.write("### Ask a question:")
-            question = st.text_input("Type here...")
+            stock = fetch_stock_data(symbol)
 
-            if st.button("Ask"):
-                if question.lower() == "closing price":
-                    st.write(f"The closing price of {symbol} is ${stock.history(period='1d')['Close'].iloc[-1]}")
+            st.write(f"### {symbol} Stock Information")
+            st.write(stock.info)
 
-                elif question.lower() == "opening price":
-                    st.write(f"The opening price of {symbol} was ${stock.history(period='1d')['Open'].iloc[0]}")
+            # Tokenize the keys and values of stock.info
+            info_tokens = {}
+            for key, value in stock.info.items():
+                key_tokens = word_tokenize(str(key).lower())
+                value_tokens = word_tokenize(str(value).lower())
+                info_tokens[key] = key_tokens + value_tokens
 
-                elif question.lower() == "volume":
-                    st.write(f"The volume of {symbol} traded today is {stock.history(period='1d')['Volume'].iloc[-1]}")
+            # Fetch historical data for risk calculation
+            stock_history = stock.history(period="1y")
 
-                elif question.lower() == "top gainer":
-                    top_gainer = stock.history(period='1d').nlargest(1, 'Close')
-                    st.write(f"The top gainer today is {top_gainer.index[0]} with a closing price of ${top_gainer['Close'].iloc[0]}")
+            # Calculate daily returns
+            stock_history['Daily Return'] = stock_history['Close'].pct_change()
 
-                elif question.lower() == "top loser":
-                    top_loser = stock.history(period='1d').nsmallest(1, 'Close')
-                    st.write(f"The top loser today is {top_loser.index[0]} with a closing price of ${top_loser['Close'].iloc[0]}")
+            # Calculate risk (standard deviation of daily returns)
+            risk_level = stock_history['Daily Return'].std()
 
-                else:
-                    st.write("I'm sorry, I don't understand that question.")
+            st.write(f"### Estimated Risk Level")
+            st.write(f"The estimated risk level of {symbol} based on historical volatility is {risk_level:.2f}")
 
-        except Exception as e:
-            st.error(f"Error fetching data: {str(e)}")
+            # Chatbot interaction loop
+            while True:
+                st.write("### Ask a question (type 'bye' to exit):")
+                question = st.text_input("Type here...")
+
+                if question.lower() == 'bye':
+                    break
+
+                if st.button("Ask"):
+                    found_answer = False
+
+                    # Tokenize the user question
+                    tokens = word_tokenize(question.lower())
+
+                    # Check for relevant keywords in stock.info
+                    for key, key_tokens in info_tokens.items():
+                        if all(token in key_tokens for token in tokens):
+                            st.write(f"{key.capitalize()}: {stock.info[key]}")
+                            found_answer = True
+                            break
+
+                    if not found_answer:
+                        # Check for relevant keywords in other questions
+                        if 'closing' in tokens and 'price' in tokens:
+                            st.write(f"The closing price of {symbol} is ${stock.history(period='1d')['Close'].iloc[-1]}")
+                            found_answer = True
+
+                        elif 'opening' in tokens and 'price' in tokens:
+                            st.write(f"The opening price of {symbol} was ${stock.history(period='1d')['Open'].iloc[0]}")
+                            found_answer = True
+
+                        elif 'volume' in tokens:
+                            st.write(f"The volume of {symbol} traded today is {stock.history(period='1d')['Volume'].iloc[-1]}")
+                            found_answer = True
+
+                        elif 'top' in tokens and 'gainer' in tokens:
+                            top_gainer = stock.history(period='1d').nlargest(1, 'Close')
+                            st.write(f"The top gainer today is {top_gainer.index[0]} with a closing price of ${top_gainer['Close'].iloc[0]}")
+                            found_answer = True
+
+                        elif 'top' in tokens and 'loser' in tokens:
+                            top_loser = stock.history(period='1d').nsmallest(1, 'Close')
+                            st.write(f"The top loser today is {top_loser.index[0]} with a closing price of ${top_loser['Close'].iloc[0]}")
+                            found_answer = True
+
+                        elif 'long' in tokens and 'term' in tokens and 'investment' in tokens:
+                            if stock.info['dividendYield'] > 0.05:  # Example condition for considering long-term investment
+                                st.write("Considering the high dividend yield, this stock might be suitable for long-term investment.")
+                            else:
+                                st.write("Based on current information, this stock might not be suitable for long-term investment.")
+                            found_answer = True
+
+                        elif 'risk' in tokens and 'level' in tokens:
+                            st.write(f"The estimated risk level of {symbol} based on historical volatility is {risk_level:.2f}")
+                            found_answer = True
+
+                    if not found_answer:
+                        st.write("I'm sorry, I don't understand that question.")
+
+    
     
 elif page == "Stock News":
-    def get_stock_news(ticker, num_news=5):
-        stock = yf.Ticker(ticker)
-        news = stock.news
-        return news[:num_news]
+        NEWS_API_ENDPOINT = "https://newsapi.org/v2/everything"
+        NEWS_API_KEY = "263f24e3d72e4880ab9ce9559725bef3"  # Replace with your API key
 
-    # Streamlit app content
-    st.title("Real-Time Stock News")
+        # Streamlit app title
+        st.title("Stock News Viewer")
 
-    # Sidebar for user input
-    ticker = user_input
-    num_news = st.sidebar.slider("Number of News Articles", 1, 10, 5)
+        # Sidebar input for stock symbol
+        stock_symbol = user_input
 
-    # Display stock news
-    st.header(f"Latest News for {ticker}")
-    news_list = get_stock_news(ticker, num_news)
+        # Slider for selecting the number of news articles
+        num_articles = st.slider("Number of News Articles", min_value=1, max_value=20, value=10)
 
-    for news_item in news_list:
-        title = news_item.get('title', 'Title Not Available')
-        date = news_item.get('date', 'Date Not Available')
-        summary = news_item.get('summary', 'Summary Not Available')
-        url = news_item.get('url', 'URL Not Available')
+        if stock_symbol:
+            # Fetch news articles related to the selected stock
+            params = {
+                "q": stock_symbol,
+                "apiKey": NEWS_API_KEY,
+                "sortBy": "publishedAt",
+                "language": "en",
+                "pageSize": num_articles,
+            }
+            try:
+                response = requests.get(NEWS_API_ENDPOINT, params=params)
+                response.raise_for_status()  # Raise an exception for HTTP errors
 
-        st.subheader(title)
-        st.write(f"Published: {date}")
-        st.write(f"Summary: {summary}")
-        st.write(f"URL: {url}")
-        st.markdown("---")  # Separator between news articles
+                articles = response.json().get("articles", [])
+
+                if articles:
+                    # Display news articles in a grid layout
+                    for i in range(0, len(articles), 3):
+                        row_articles = articles[i:i+3]
+                        col1, col2, col3 = st.columns(3)
+                        for idx, article in enumerate(row_articles):
+                            with locals()[f"col{idx+1}"]:
+                                st.write("###", article["title"])
+                                st.write(article["description"])
+                                st.write("Source:", article["source"]["name"])
+                                st.write("Published at:", article["publishedAt"])
+                                st.write("[Read more](" + article["url"] + ")")
+                                st.markdown("---")
+                else:
+                    st.write("No articles found for this stock symbol.")
+            except requests.exceptions.RequestException as e:
+                st.error("Error fetching news. Please check your internet connection and try again.")
+                st.error(f"Error details: {e}")
+            except Exception as e:
+                st.error(f"An error occurred: {str(e)}")
