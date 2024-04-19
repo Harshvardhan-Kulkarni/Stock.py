@@ -12,5 +12,5 @@ pandas_datareader
 yfinance
 components.v1
 plotly
-
+nltk
 
