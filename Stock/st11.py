@@ -12,8 +12,7 @@ import streamlit.components.v1 as components
 import nltk
 from nltk.tokenize import word_tokenize
 import requests
-
-import streamlit as st    
+    
 st.title("Stock Market Analysis")
 today = datetime.date.today()
 start = '2010-01-01'
@@ -368,18 +367,6 @@ elif page == "Prediction":
              return 'color: black'  # Assuming black for zero change
 
     #Apply conditional formatting to font color based on PercentageChange
-    def color_negative_red_percent(value):
-        if '%' in value:  # Check if the value contains a percentage sign
-             value = float(value.replace('%', ''))  # Remove percentage sign and convert to float
-             if value< 0:
-                 return 'color: red'
-             elif value > 0:
-                return 'color: green'
-             else:
-                 return 'color: black'  # Assuming black for zero change
-
-    styled_result_df = result_df.style.applymap(color_negative_red, subset=['DailyChange']) \
-                                     .applymap(color_negative_red_percent, subset=['PercentageChange'])
 
     fig = go.Figure(data=[go.Candlestick(x=result_df.index,
                     open=result_df['Open'],
