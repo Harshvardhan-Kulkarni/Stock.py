@@ -83,10 +83,10 @@ if page == "Home":
     cols = st.columns(2)
     with cols[0]:
         st.markdown("- [Ashish Ruke](https://www.linkedin.com/in/ashish-ruke-68a038230/)")
-        st.markdown("- [Harshvardhan Kulkarni](https://www.linkedin.com/in/ashish-ruke-68a038230/)")
+        st.markdown("- [Swarup Bhosale](https://www.linkedin.com/in/sahil-neharkar-4a895b226/)")
     with cols[1]:
-        st.markdown("- [Anushka Pote](https://www.linkedin.com/in/anushka-pote-17b692224/)")
-        st.markdown("- [Shreyash Shegade](https://www.linkedin.com/in/shreyash-shedage-970b812a7/)")
+        st.markdown("- [Sahil Neharkar](https://www.linkedin.com/in/sahil-neharkar-4a895b226/)")
+        st.markdown("- [Atharva Valsange](https://www.linkedin.com/in/sahil-neharkar-4a895b226/)")
 
 
 elif page == "Stock Analysis":
