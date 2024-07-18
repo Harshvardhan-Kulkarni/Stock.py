@@ -92,7 +92,7 @@ if page == "Home":
 elif page == "Stock Analysis":
 
 
-    st.subheader("Data from 2010 to 2023")
+    st.subheader("Data from 2010 to 2024")
     data1 = pd.DataFrame(df)
 
     st.dataframe(data1.tail(15))
@@ -393,7 +393,7 @@ elif page == "Prediction":
     if st.session_state.stock_symbol is not None:
         try:
             # Download historical data
-            stock_data = yf.download(user_input, start="2023-01-01", end="2028-01-01")
+            stock_data = yf.download(user_input, start="2024-01-01", end="2028-01-01")
 
             if not stock_data.empty and len(stock_data['Adj Close']) >= 2:
                 # Calculate returns over the next 5 years
